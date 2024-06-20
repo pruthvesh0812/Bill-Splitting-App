@@ -13,7 +13,11 @@ import { typeDefs } from "./typeDefs";
 //     readFileSync(path.join(__dirname,"./schema.gql"),{encoding:"utf-8"})
 // )
 import { makeExecutableSchema } from '@graphql-tools/schema'
- 
+
+import  { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
+
+import { serverCleanup } from '../index';
+import { httpServer } from '../index';
 
 //to convert your Resolvers object to a GraphQLResolverMap<unknown> object.
 //resolversMap that maps each type to its corresponding resolvers.
@@ -81,7 +85,24 @@ export const schema = makeExecutableSchema({ typeDefs, resolvers })
 
 
  export const graphQLServer = new ApolloServer({
-    schema:schema
+    schema:schema,
+    plugins: [
+      // Proper shutdown for the HTTP server.
+      ApolloServerPluginDrainHttpServer({ httpServer:httpServer }),
+  
+      // Proper shutdown for the WebSocket server.
+      {
+        async serverWillStart() {
+          return {
+            async drainServer() {
+              await serverCleanup.dispose();
+            },
+          };
+        },
+      },
+    ],
+
+
   });
   
 

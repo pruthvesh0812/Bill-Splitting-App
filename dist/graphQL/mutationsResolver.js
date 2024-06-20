@@ -9,14 +9,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.mutationResolvers = void 0;
 const user_models_1 = require("../models/user.models");
 const group_models_1 = require("../models/group.models");
-// import { subscriptionResolvers } from "./subscriptionsResolver";
-const queryResolvers_1 = require("./queryResolvers");
-const graphql_yoga_1 = require("graphql-yoga");
-// import {PubSub, withFilter}  from "graphql-subscriptions"
-const resolvers = {
-    Query: queryResolvers_1.queryResolvers.Query,
+const graphql_subscriptions_1 = require("graphql-subscriptions");
+const pubsub = new graphql_subscriptions_1.PubSub();
+exports.mutationResolvers = {
     Mutation: {
         createUser(_, { userDetails }) {
             return __awaiter(this, void 0, void 0, function* () {
@@ -40,7 +38,7 @@ const resolvers = {
                 // return {...newUser, id:newUser._id.toString(), events:[]}
             });
         },
-        createGroup(_, { groupDetails }, { dataSources }) {
+        createGroup(_, { groupDetails }) {
             return __awaiter(this, void 0, void 0, function* () {
                 const newGrp = new group_models_1.Groups({ admin: groupDetails === null || groupDetails === void 0 ? void 0 : groupDetails.admin, users: groupDetails === null || groupDetails === void 0 ? void 0 : groupDetails.users });
                 yield newGrp.save();
@@ -88,23 +86,11 @@ const resolvers = {
                 });
                 const admin = Object.assign(Object.assign({}, groupUsersAdmin[0].admin), { id: groupUsersAdmin[0].admin._id.toString() });
                 // publish to pubsub
-                dataSources.pubsub.publish('GROUP_CREATED', {
+                pubsub.publish('GROUP_CREATED', {
                     GroupCreated: { id: grpId, users, admin } // Group type // NOTE TO HAVE OBJECT ACCORDING TO SCHEMA TYPE
                 });
                 return { id: grpId, users, admin };
             });
         }
-    },
-    Subscription: {
-        GroupCreated: {
-            subscribe: (_, args, { dataSources }) => (0, graphql_yoga_1.pipe)(dataSources.pubsub.subscribe('GROUP_CREATED'), 
-            // only sending ws message to those users who are invited by admin
-            (0, graphql_yoga_1.filter)((payload) => payload.GroupCreated.users.some((user) => user.id == args.id))
-            // client checking his id is present in those invited
-            )
-            // above approach is not efficient when there are many users and only one server
-            // for any group created .. the server will be doing calculations for each user in FCFS manner
-        }
     }
 };
-exports.default = resolvers;

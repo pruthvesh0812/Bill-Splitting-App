@@ -77,4 +77,9 @@ type Mutation {
   joinEvent(user: UserInput!): User
   onPayment(payment: paymentInput): User
 }
+
+type Subscription{
+  GroupCreated(id:ID!):Group
+}
+
 `;

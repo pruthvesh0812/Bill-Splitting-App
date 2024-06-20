@@ -97,6 +97,16 @@ export type QueryGetUserByIdArgs = {
   username: Scalars['String']['input'];
 };
 
+export type Subscription = {
+  __typename?: 'Subscription';
+  GroupCreated?: Maybe<Group>;
+};
+
+
+export type SubscriptionGroupCreatedArgs = {
+  id: Scalars['ID']['input'];
+};
+
 export type User = {
   __typename?: 'User';
   balance?: Maybe<Scalars['Float']['output']>;
@@ -214,6 +224,7 @@ export type ResolversTypes = {
   Mutation: ResolverTypeWrapper<{}>;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
+  Subscription: ResolverTypeWrapper<{}>;
   User: ResolverTypeWrapper<User>;
   UserInput: UserInput;
   createGrpInput: CreateGrpInput;
@@ -232,6 +243,7 @@ export type ResolversParentTypes = {
   Mutation: {};
   Query: {};
   String: Scalars['String']['output'];
+  Subscription: {};
   User: User;
   UserInput: UserInput;
   createGrpInput: CreateGrpInput;
@@ -270,6 +282,10 @@ export type QueryResolvers<ContextType = DataSourceContext, ParentType extends R
   getUsers?: Resolver<Maybe<Array<Maybe<ResolversTypes['User']>>>, ParentType, ContextType>;
 };
 
+export type SubscriptionResolvers<ContextType = DataSourceContext, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = {
+  GroupCreated?: SubscriptionResolver<Maybe<ResolversTypes['Group']>, "GroupCreated", ParentType, ContextType, RequireFields<SubscriptionGroupCreatedArgs, 'id'>>;
+};
+
 export type UserResolvers<ContextType = DataSourceContext, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
   balance?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -285,6 +301,7 @@ export type Resolvers<ContextType = DataSourceContext> = {
   Group?: GroupResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  Subscription?: SubscriptionResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
 };
 

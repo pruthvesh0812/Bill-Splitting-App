@@ -1,9 +1,11 @@
 import { Connection } from "mongoose";
 import mongoose from "mongoose";
+import { createPubSub } from "graphql-yoga";
 
+const pubsub = createPubSub();
 
 export type DataSourceContext = {
   dataSources: {
-    db: Connection;
+    pubsub:typeof pubsub
   };
 };

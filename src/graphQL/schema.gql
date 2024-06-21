@@ -2,7 +2,8 @@ input EventInput {
   eventName: String!
   date: String!
   totalAmount: Float!
-  status: EventStatus!
+  status: String!
+  GroupId:ID!
 }
 
 type User {
@@ -16,6 +17,7 @@ type User {
 
 type Group {
   id: ID!
+  groupName:String!
   users: [User!]!
   admin: User
 }
@@ -26,7 +28,12 @@ type Event {
   date: String!
   totalAmount: Float!
   paidByUser: [User]!
-  status: EventStatus!
+  status: String!
+}
+
+type UserJoined{
+  id:ID!,
+  username:String
 }
 
 enum EventStatus {
@@ -49,15 +56,21 @@ input createUserInput {
 
 input createGrpInput {
   users: [ID!]!
+  groupName:String!
   admin: ID!
+}
+
+input userEventInput {
+  userId:ID!
+  username:String!
+  eventName:String!
+  eventId:ID!
 }
 
 input UserInput {
   id: ID!
-  username: String!
-  email: String!
-  password: String!
-  balance: Float
+  username:String!
+  groupId: ID!
 }
 
 input paymentInput {
@@ -70,10 +83,14 @@ type Mutation {
   createUser(userDetails: createUserInput!): User!
   createGroup(groupDetails: createGrpInput): Group!
   postEvent(event: EventInput): Event!
-  joinEvent(user: UserInput!): User
+  joinEvent(userEventInput: userEventInput): Event
+  joinGroup(user: UserInput!): Group
   onPayment(payment: paymentInput): User
 }
 
 type Subscription{
   GroupCreated(id:ID!):Group
+  EventCreated(groupId:ID!):Event
+  CheckNewGroupUsers(groupId:ID!):UserJoined
+  CheckNewEventpUsers(eventId:ID!):UserJoined
 }

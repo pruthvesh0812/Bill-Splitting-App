@@ -5,9 +5,13 @@ const groupSchema = new mongoose.Schema({
         {
             type:mongoose.Schema.Types.ObjectId,
             ref:"Users",
-            required:true
+            
         }
     ],
+  groupName:{
+    type:String,
+    required:true
+  }  ,
     admin:{
         type:mongoose.Schema.Types.ObjectId,
         ref:"Users",

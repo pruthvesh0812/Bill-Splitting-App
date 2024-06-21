@@ -4,33 +4,35 @@ import { Users } from "../models/user.models";
 import { Resolvers, User } from "./graphql-types";
 import { DataSourceContext } from "./context";
 import { Groups } from "../models/group.models"
-import {PubSub, withFilter}  from "graphql-subscriptions"
+import { filter, pipe } from "graphql-yoga";
 
-const pubsub = new PubSub();
 
- const subscriptionResolvers:Resolvers = {
+export const subscriptionResolvers:Resolvers = {
     Subscription:{
-        // GroupCreated: {
-        //     subscribe: ()=>({ // workaround for an error if you do it the normal way
-        //         [Symbol.asyncIterator]: withFilter(
-        //             ()=> pubsub.asyncIterator(['GROUP_CREATED']),
-        //             (payload,variables)=>{
-                        
-        //                 // only sending ws message to those users who are invited by admin
-        //                 const response =  (payload.GroupCreated.users.map((user:User):boolean | undefined => {
-        //                     if(user.id == variables.id){ // client checking his id is present in those invited
-        //                         return true;
-        //                     }
-        //                 }))[0]
-    
-        //                 // above approach is not efficient when there are many users and only one server
-        //                 // for any group created .. the server will be doing calculations for each user in FCFS manner
-        //                 console.log(response,"response")
-        //                 return response
-        //             }
-        //     )
-        //     })
-        // }
+        GroupCreated: {
+            subscribe: (_,args,{dataSources}) => pipe(
+                        dataSources.pubsub.subscribe('GROUP_CREATED'),                       
+                            // only sending ws message to those users who are invited by admin
+                            filter((payload)=> payload.GroupCreated.users.some((user:User) => user.id == args.id))
+                                    // client checking his id is present in those invited
+                            )
+
+                            // above approach is not efficient when there are many users and only one server
+                            // for any group created .. the server will be doing calculations for each user in FCFS manner
+                            
+        },
+
+        EventCreated:{
+            subscribe: (_,args,{dataSources}) => dataSources.pubsub.subscribe(`${args.groupId!}-event`)   
+        },
+
+        CheckNewGroupUsers:{
+            subscribe:(_,args,{dataSources}) => dataSources.pubsub.subscribe(`${args.groupId!}-newuser`)   
+        },
+        CheckNewEventpUsers:{
+            subscribe:(_,args,{dataSources}) => dataSources.pubsub.subscribe(`${args.eventId!}-newuser`)   
+        },
+        }
     }   
-}
+
 

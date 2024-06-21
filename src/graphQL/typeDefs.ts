@@ -5,6 +5,7 @@ export const typeDefs = `
   date: String!
   totalAmount: Float!
   status: EventStatus!
+  GroupId:ID!
 }
 
 type User {

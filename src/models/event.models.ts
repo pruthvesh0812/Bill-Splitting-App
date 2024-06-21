@@ -6,7 +6,7 @@ const eventSchema = new mongoose.Schema({
         required:true
     },
     date: {
-        type:Date,
+        type:String,
         required:true
     },
     totalAmount:{
@@ -17,12 +17,15 @@ const eventSchema = new mongoose.Schema({
         {
             type:mongoose.Schema.Types.ObjectId,
             ref:"Users",
-            required:true
         }
     ],
     status:{
         type:String,
         enum:['OPEN',"CLOSE"],
+        required:true
+    },
+    groupId:{
+        type:String,
         required:true
     }
 })

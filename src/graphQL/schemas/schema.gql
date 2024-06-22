@@ -36,6 +36,19 @@ type UserJoined{
   username:String
 }
 
+type message{
+  eventId:ID!
+  content:String!
+  timestamp:String!
+  sentBy:ID!
+  readBy:[ID]
+}
+
+type eventMessages{
+  eventId:ID!
+  allMessages:[message!]!
+}
+
 enum EventStatus {
   OPEN
   CLOSE
@@ -79,6 +92,13 @@ input paymentInput {
   event: EventInput
 }
 
+input messageInput{
+  eventId:ID!
+  content:String!
+  timestamp:String!
+  sentBy:ID!
+}
+
 type Mutation {
   createUser(userDetails: createUserInput!): User!
   createGroup(groupDetails: createGrpInput): Group!
@@ -86,11 +106,13 @@ type Mutation {
   joinEvent(userEventInput: userEventInput): Event
   joinGroup(user: UserInput!): Group
   onPayment(payment: paymentInput): User
+  eventMessages(message:messageInput!):eventMessages!
 }
 
 type Subscription{
   GroupCreated(id:ID!):Group
   EventCreated(groupId:ID!):Event
   CheckNewGroupUsers(groupId:ID!):UserJoined
-  CheckNewEventpUsers(eventId:ID!):UserJoined
+  CheckNewEventUsers(eventId:ID!):UserJoined
+  broadcastEventMessages(eventId:ID!):eventMessages!
 }

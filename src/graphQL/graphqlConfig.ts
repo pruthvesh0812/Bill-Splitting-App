@@ -8,7 +8,7 @@ import resolvers from "./resolvers";
 // import { DataSourceContext } from "./context";
 // import { GraphQLResolverMap } from "@apollo/subgraph/dist/schema-helper";
 // import { buildSubgraphSchema } from "@apollo/subgraph";
-import { typeDefs } from "./typeDefs";
+import { typeDefs } from "./schemas/typeDefs";
 // const typeDefs = gql(
 //     readFileSync(path.join(__dirname,"./schema.gql"),{encoding:"utf-8"})
 // )

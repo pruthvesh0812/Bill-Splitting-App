@@ -52,6 +52,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   createGroup: Group;
   createUser: User;
+  eventMessages: EventMessages;
   joinEvent?: Maybe<Event>;
   joinGroup?: Maybe<Group>;
   onPayment?: Maybe<User>;
@@ -66,6 +67,11 @@ export type MutationCreateGroupArgs = {
 
 export type MutationCreateUserArgs = {
   userDetails: CreateUserInput;
+};
+
+
+export type MutationEventMessagesArgs = {
+  message: MessageInput;
 };
 
 
@@ -107,14 +113,15 @@ export type QueryGetUserByIdArgs = {
 
 export type Subscription = {
   __typename?: 'Subscription';
-  CheckNewEventpUsers?: Maybe<UserJoined>;
+  CheckNewEventUsers?: Maybe<UserJoined>;
   CheckNewGroupUsers?: Maybe<UserJoined>;
   EventCreated?: Maybe<Event>;
   GroupCreated?: Maybe<Group>;
+  broadcastEventMessages: EventMessages;
 };
 
 
-export type SubscriptionCheckNewEventpUsersArgs = {
+export type SubscriptionCheckNewEventUsersArgs = {
   eventId: Scalars['ID']['input'];
 };
 
@@ -131,6 +138,11 @@ export type SubscriptionEventCreatedArgs = {
 
 export type SubscriptionGroupCreatedArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type SubscriptionBroadcastEventMessagesArgs = {
+  eventId: Scalars['ID']['input'];
 };
 
 export type User = {
@@ -166,6 +178,28 @@ export type CreateUserInput = {
   events?: InputMaybe<EventInput>;
   password: Scalars['String']['input'];
   username: Scalars['String']['input'];
+};
+
+export type EventMessages = {
+  __typename?: 'eventMessages';
+  allMessages: Array<Message>;
+  eventId: Scalars['ID']['output'];
+};
+
+export type Message = {
+  __typename?: 'message';
+  content: Scalars['String']['output'];
+  eventId: Scalars['ID']['output'];
+  readBy?: Maybe<Array<Maybe<Scalars['ID']['output']>>>;
+  sentBy: Scalars['ID']['output'];
+  timestamp: Scalars['String']['output'];
+};
+
+export type MessageInput = {
+  content: Scalars['String']['input'];
+  eventId: Scalars['ID']['input'];
+  sentBy: Scalars['ID']['input'];
+  timestamp: Scalars['String']['input'];
 };
 
 export type PaymentInput = {
@@ -268,6 +302,9 @@ export type ResolversTypes = {
   UserJoined: ResolverTypeWrapper<UserJoined>;
   createGrpInput: CreateGrpInput;
   createUserInput: CreateUserInput;
+  eventMessages: ResolverTypeWrapper<EventMessages>;
+  message: ResolverTypeWrapper<Message>;
+  messageInput: MessageInput;
   paymentInput: PaymentInput;
   userEventInput: UserEventInput;
 };
@@ -289,6 +326,9 @@ export type ResolversParentTypes = {
   UserJoined: UserJoined;
   createGrpInput: CreateGrpInput;
   createUserInput: CreateUserInput;
+  eventMessages: EventMessages;
+  message: Message;
+  messageInput: MessageInput;
   paymentInput: PaymentInput;
   userEventInput: UserEventInput;
 };
@@ -314,6 +354,7 @@ export type GroupResolvers<ContextType = DataSourceContext, ParentType extends R
 export type MutationResolvers<ContextType = DataSourceContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   createGroup?: Resolver<ResolversTypes['Group'], ParentType, ContextType, Partial<MutationCreateGroupArgs>>;
   createUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationCreateUserArgs, 'userDetails'>>;
+  eventMessages?: Resolver<ResolversTypes['eventMessages'], ParentType, ContextType, RequireFields<MutationEventMessagesArgs, 'message'>>;
   joinEvent?: Resolver<Maybe<ResolversTypes['Event']>, ParentType, ContextType, Partial<MutationJoinEventArgs>>;
   joinGroup?: Resolver<Maybe<ResolversTypes['Group']>, ParentType, ContextType, RequireFields<MutationJoinGroupArgs, 'user'>>;
   onPayment?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, Partial<MutationOnPaymentArgs>>;
@@ -327,10 +368,11 @@ export type QueryResolvers<ContextType = DataSourceContext, ParentType extends R
 };
 
 export type SubscriptionResolvers<ContextType = DataSourceContext, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = {
-  CheckNewEventpUsers?: SubscriptionResolver<Maybe<ResolversTypes['UserJoined']>, "CheckNewEventpUsers", ParentType, ContextType, RequireFields<SubscriptionCheckNewEventpUsersArgs, 'eventId'>>;
+  CheckNewEventUsers?: SubscriptionResolver<Maybe<ResolversTypes['UserJoined']>, "CheckNewEventUsers", ParentType, ContextType, RequireFields<SubscriptionCheckNewEventUsersArgs, 'eventId'>>;
   CheckNewGroupUsers?: SubscriptionResolver<Maybe<ResolversTypes['UserJoined']>, "CheckNewGroupUsers", ParentType, ContextType, RequireFields<SubscriptionCheckNewGroupUsersArgs, 'groupId'>>;
   EventCreated?: SubscriptionResolver<Maybe<ResolversTypes['Event']>, "EventCreated", ParentType, ContextType, RequireFields<SubscriptionEventCreatedArgs, 'groupId'>>;
   GroupCreated?: SubscriptionResolver<Maybe<ResolversTypes['Group']>, "GroupCreated", ParentType, ContextType, RequireFields<SubscriptionGroupCreatedArgs, 'id'>>;
+  broadcastEventMessages?: SubscriptionResolver<ResolversTypes['eventMessages'], "broadcastEventMessages", ParentType, ContextType, RequireFields<SubscriptionBroadcastEventMessagesArgs, 'eventId'>>;
 };
 
 export type UserResolvers<ContextType = DataSourceContext, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
@@ -349,6 +391,21 @@ export type UserJoinedResolvers<ContextType = DataSourceContext, ParentType exte
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type EventMessagesResolvers<ContextType = DataSourceContext, ParentType extends ResolversParentTypes['eventMessages'] = ResolversParentTypes['eventMessages']> = {
+  allMessages?: Resolver<Array<ResolversTypes['message']>, ParentType, ContextType>;
+  eventId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type MessageResolvers<ContextType = DataSourceContext, ParentType extends ResolversParentTypes['message'] = ResolversParentTypes['message']> = {
+  content?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  eventId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  readBy?: Resolver<Maybe<Array<Maybe<ResolversTypes['ID']>>>, ParentType, ContextType>;
+  sentBy?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  timestamp?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type Resolvers<ContextType = DataSourceContext> = {
   Event?: EventResolvers<ContextType>;
   Group?: GroupResolvers<ContextType>;
@@ -357,5 +414,7 @@ export type Resolvers<ContextType = DataSourceContext> = {
   Subscription?: SubscriptionResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
   UserJoined?: UserJoinedResolvers<ContextType>;
+  eventMessages?: EventMessagesResolvers<ContextType>;
+  message?: MessageResolvers<ContextType>;
 };
 

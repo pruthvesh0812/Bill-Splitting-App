@@ -14,7 +14,7 @@ import { useServer } from 'graphql-ws/lib/use/ws';
 const app = express();
 
 app.use(cors({
-    origin:"*"
+  origin: "*"
 }))
 
 app.use(express.json())
@@ -27,14 +27,14 @@ const PORT = process.env.PORT
 export const httpServer = createServer(app)
 console.log("alsdkfl")
 const wss = new WebSocketServer({
-  server:httpServer,
-  path:"/graphql"
+  server: httpServer,
+  path: "/graphql"
 })
-import {schema} from "./graphQL/graphqlConfig"
+import { schema } from "./graphQL/graphqlConfig"
 import { createPubSub } from 'graphql-yoga';
-import { DataSourceContext } from './graphQL/context';
+import { DataSourceContext } from './graphQL/types/context';
 
-const pubsub =createPubSub()
+const pubsub = createPubSub()
 export const serverCleanup = useServer({
   schema,
   context: async (ctx, msg, args): Promise<DataSourceContext> => {
@@ -44,7 +44,7 @@ export const serverCleanup = useServer({
       }
     };
   },
-},wss)
+}, wss)
 
 // because graphQLServer uses serverCleanup and httpServer in its plugin thats why calling 
 // this after they are initialized
@@ -52,28 +52,28 @@ import { graphQLServer } from './graphQL/graphqlConfig';
 
 
 //connects mongoDB
-mongoConnect() 
+mongoConnect()
 
 //starts graphql server
 const startServer = async () => {
-    console.log("23423")
-    await graphQLServer.start();
-    console.log('###')
-    // After the server is started, you can use expressMiddleware
-    app.use("/graphql", cors(), express.json(), expressMiddleware(graphQLServer, {
-      context:()=>{
-        return {
-          dataSources:{
-            pubsub:pubsub
-          }
+  console.log("23423")
+  await graphQLServer.start();
+  console.log('###')
+  // After the server is started, you can use expressMiddleware
+  app.use("/graphql", cors(), express.json(), expressMiddleware(graphQLServer, {
+    context: () => {
+      return {
+        dataSources: {
+          pubsub: pubsub
         }
       }
-    }));
-  
-    httpServer.listen(PORT, () => {
-      console.log("WS server running on http://localhost:5000");
-      console.log("GraphQL server running on http://localhost:5000/graphql");
-    });
-  };
-  
-  startServer();
+    }
+  }));
+
+  httpServer.listen(PORT, () => {
+    console.log("WS server running on http://localhost:5000");
+    console.log("GraphQL server running on http://localhost:5000/graphql");
+  });
+};
+
+startServer();

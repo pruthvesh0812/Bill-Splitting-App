@@ -1,4 +1,6 @@
 import mongoose from "mongoose"
+import { messageSchema } from "./message.models"
+
 
 const eventSchema = new mongoose.Schema({
     eventName:{
@@ -27,7 +29,13 @@ const eventSchema = new mongoose.Schema({
     groupId:{
         type:String,
         required:true
-    }
+    },
+    messages:[messageSchema], // storing messages of type messageSchema
 })
+
+
+// mongoDb document have a size of 16MB so one document will get exhausted - so we need archived messages 
+// defined in message.models.js
+
 export const Events = mongoose.model("Events",eventSchema)
 

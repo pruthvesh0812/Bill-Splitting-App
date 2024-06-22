@@ -1,12 +1,12 @@
 
 import { GraphQLResolverMap } from "@apollo/subgraph/dist/schema-helper";
 import { Users } from "../models/user.models";
-import { Resolvers, User } from "./graphql-types";
-import { DataSourceContext } from "./context";
+import { Resolvers, User } from "./types/graphql-types";
+import { DataSourceContext } from "./types/context";
 import { Groups } from "../models/group.models";
-import { mutationResolvers } from "./mutations/mutationsResolver";
-import { subscriptionResolvers } from "./subscriptionsResolver";
-import { queryResolvers } from "./queryResolvers";
+import { mutationResolvers } from "./mutations/index.mutations";
+import { subscriptionResolvers } from "./subscriptions/subscriptionsResolver";
+import { queryResolvers } from "./queries/queryResolvers";
 
 // import {PubSub, withFilter}  from "graphql-subscriptions"
 
